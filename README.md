@@ -29,7 +29,7 @@ This is the back-end of the e-commerce web application with web tracking and rec
 
 ## 📋 Getting Started
 
-### 1. Run locally
+###  Run locally
 
 ```bash
 uvicorn app.main:app --reload
