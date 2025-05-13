@@ -14,8 +14,8 @@ def signup(user: UserCreate, response: Response, db: Session = Depends(get_db)):
         key="jwt",
         value=token_data["access_token"],
         httponly=True,
-        secure=True,  
-        samesite="Lax",
+        secure=True,  # Only over HTTPS in production
+        samesite="None",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return token_data
@@ -28,15 +28,27 @@ def login(user: UserLogin, response: Response, db: Session = Depends(get_db)):
         value=token_data["access_token"],
         httponly=True,
         secure=True,
-        samesite="Lax",
+        samesite="None",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return token_data
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("jwt", path="/")
-    response.delete_cookie("guest_session_id", path="/")
+    response.delete_cookie(
+        key="jwt",
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
+    response.delete_cookie(
+        key="guest_session_id",
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
     return {"message": "Logged out"}
 
 @router.get("/authenticate")
