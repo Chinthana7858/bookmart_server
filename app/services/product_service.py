@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductUpdate
@@ -44,7 +45,9 @@ def search_products_by_name(name: str, db: Session):
     return db.query(Product).filter(Product.title.ilike(f"%{name}%")).all()
 
 def get_all_products_paginated(db: Session, limit: int, offset: int):
-    return db.query(Product).offset(offset).limit(limit).all()
+    products = db.query(Product).order_by(func.random()).offset(offset).limit(limit).all()
+    total = db.query(Product).count()
+    return {"products": products, "total": total}
 
 def get_sorted_products(sort_by: str, order: str, db: Session):
     if sort_by not in {"price", "stock", "created_at"}:

@@ -7,7 +7,7 @@ from app.db import get_db
 from app.schemas.product import ProductCreate, ProductOut, ProductUpdate
 from app.services import product_service
 from app.models.product import Product
-from app.services.product_service import create_product
+from app.services.product_service import create_product, get_all_products_paginated
 
 
 router = APIRouter()
@@ -47,9 +47,8 @@ def get_paginated_products(
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0)
 ):
-    products = db.query(Product).offset(offset).limit(limit).all()
-    total = db.query(Product).count()
-    return {"products": products, "total": total}
+    return get_all_products_paginated(db, limit, offset)
+
 
 @router.get("/sorted", response_model=list[ProductOut])
 def get_sorted_products(
