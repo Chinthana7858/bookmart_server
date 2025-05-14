@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from typing import List
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.auth.utils import require_admin
 from app.db import get_db
-from app.schemas.order import OrderCreate, OrderItemCreate, OrderOut
-from app.services.order_service import create_order, create_order_item, fetch_all_orders
+from app.schemas.order import OrderCreate, OrderItemCreate, OrderOut, PaginatedOrders
+from app.services.order_service import create_order, create_order_item, fetch_all_orders, fetch_all_orders_paginated
 from app.services.user_service import get_orders_by_user
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
@@ -15,6 +16,15 @@ def create_new_order(order: OrderCreate, db: Session = Depends(get_db)):
 @router.get("/", response_model=list[OrderOut])
 def get_all_orders(db: Session = Depends(get_db),current_admin=Depends(require_admin)):
     return fetch_all_orders(db)
+
+@router.get("/paginated", response_model=PaginatedOrders)
+def get_all_orders(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(15, gt=0),
+    db: Session = Depends(get_db),
+    current_admin=Depends(require_admin)
+):  
+    return fetch_all_orders_paginated(db, skip=skip, limit=limit)
 
 @router.post("/items/")
 def add_order_item(item: OrderItemCreate, db: Session = Depends(get_db)):

@@ -10,14 +10,14 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 @router.post("/signup", response_model=Token)
 def signup(user: UserCreate, response: Response, db: Session = Depends(get_db)):
     token_data = register_user(user, db)
-    response.set_cookie(
-        key="jwt",
-        value=token_data["access_token"],
-        httponly=True,
-        secure=True,  
-        samesite="Lax",
-        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
+    # response.set_cookie(
+    #     key="jwt",
+    #     value=token_data["access_token"],
+    #     httponly=True,
+    #     secure=True,  # Only over HTTPS in production
+    #     samesite="None",
+    #     max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    # )
     return token_data
 
 @router.post("/login", response_model=Token)
@@ -28,15 +28,27 @@ def login(user: UserLogin, response: Response, db: Session = Depends(get_db)):
         value=token_data["access_token"],
         httponly=True,
         secure=True,
-        samesite="Lax",
+        samesite="None",
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
     return token_data
 
 @router.post("/logout")
 def logout(response: Response):
-    response.delete_cookie("jwt", path="/")
-    response.delete_cookie("guest_session_id", path="/")
+    response.delete_cookie(
+        key="jwt",
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
+    response.delete_cookie(
+        key="guest_session_id",
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
     return {"message": "Logged out"}
 
 @router.get("/authenticate")

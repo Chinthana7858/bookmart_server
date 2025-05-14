@@ -14,6 +14,11 @@ def create_order(data: OrderCreate, db: Session):
 def fetch_all_orders(db: Session):
     return db.query(Order).all()
 
+def fetch_all_orders_paginated(db: Session, skip: int = 0, limit: int = 15):
+    orders = db.query(Order).order_by(Order.order_date.desc()).offset(skip).limit(limit).all()
+    total = db.query(Order).count()
+    return {"orders": orders, "total": total}
+
 def create_order_item(data: OrderItemCreate, db: Session):
     product = db.query(Product).filter(Product.id == data.product_id).first()
     if not product or product.stock < data.quantity:

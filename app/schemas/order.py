@@ -27,6 +27,9 @@ class OrderOut(OrderCreate):
         from_attributes = True
 
 
+class PaginatedOrders(BaseModel):
+    orders: List[OrderOut]
+    total: int
 
 class OrderItemCreate(BaseModel):
     order_id: int
