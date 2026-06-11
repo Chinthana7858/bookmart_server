@@ -46,6 +46,8 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 
 # Translations
 *.mo
@@ -55,6 +57,10 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
+*.sqlite
+*.sqlite3
+*.db
+test.db
 
 # Flask stuff:
 instance/
@@ -84,6 +90,8 @@ celerybeat-schedule
 
 # Environments
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
@@ -106,3 +114,15 @@ venv.bak/
 
 # Mac OS
 .DS_Store
+
+# Runtime / generated files
+logs/
+*.pid
+*.tmp
+tmp/
+temp/
+
+# IDE files
+.vscode/*
+!.vscode/extensions.json
+.idea/

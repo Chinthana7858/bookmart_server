@@ -51,7 +51,37 @@ def test_delete_category(client, db_session, admin_token):
     assert response.status_code == 200
     assert response.json()["message"] == "Category deleted successfully"
 
+
+def test_update_category(client, db_session, admin_token):
+    category = Category(name="Old Category", description="Old description")
+    db_session.add(category)
+    db_session.commit()
+
+    response = client.put(
+        f"/categories/{category.id}",
+        json={"name": "Updated Category", "description": "Updated description"},
+        cookies={"jwt": admin_token}
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["name"] == "Updated Category"
+    assert data["description"] == "Updated description"
+
 def test_get_all_categories(client):
     response = client.get("/categories/")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
+
+
+def test_get_paginated_categories(client, db_session):
+    category = Category(name="Paged Category", description="For pagination")
+    db_session.add(category)
+    db_session.commit()
+
+    response = client.get("/categories/paginated?skip=0&limit=10")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data["categories"], list)
+    assert data["total"] >= 1

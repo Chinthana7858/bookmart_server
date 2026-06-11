@@ -1,5 +1,6 @@
 
 import pytest
+import uuid
 from app.models.user import User
 from app.auth.utils import hash_password
 from tests.conftest import db_session
@@ -25,13 +26,50 @@ def test_signup_success(client, db_session):
         "name": "New User",
         "email": "newuser@example.com",
         "password": "Password123",
-        "address": "456 New Street",
+        "phone_country_code": "+94",
+        "phone_number": "771234567",
+        "birthday": "1998-04-20",
+        "gender": "female",
+        "primary_address": {
+            "label": "Home",
+            "line1": "456 New Street",
+            "city": "Colombo",
+            "country": "Sri Lanka",
+            "is_default": True
+        },
         "role": "user"
     })
 
     assert response.status_code == 200 or response.status_code == 201
+    assert response.cookies.get("jwt") is not None
     data = response.json()
     assert "id" in data or "access_token" in data or "message" in data
+    created_user = db_session.query(User).filter(User.email == "newuser@example.com").first()
+    assert created_user.phone_country_code == "+94"
+    assert created_user.address == "456 New Street, Colombo, Sri Lanka"
+    assert len(created_user.addresses) == 1
+
+    auth_response = client.get(
+        "/auth/authenticate",
+        cookies={"jwt": response.cookies.get("jwt")},
+    )
+    assert auth_response.status_code == 200
+    assert auth_response.json()["email"] == "newuser@example.com"
+
+def test_signup_can_create_admin(client, db_session):
+    email = f"role_check_{uuid.uuid4().hex}@example.com"
+    response = client.post("/auth/signup", json={
+        "name": "Role Check",
+        "email": email,
+        "password": "Password123",
+        "address": "456 New Street",
+        "role": "admin"
+    })
+
+    assert response.status_code == 200 or response.status_code == 201
+    created_user = db_session.query(User).filter(User.email == email).first()
+    assert created_user is not None
+    assert created_user.role == "admin"
 
 #Signup fail due to same email
 def test_signup_fail(client,test_create_user, db_session):
@@ -54,6 +92,10 @@ def test_login_success(client, test_create_user):
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert response.cookies.get("jwt") is not None
+    set_cookie = response.headers.get("set-cookie", "")
+    assert "HttpOnly" in set_cookie
+    assert "SameSite=lax" in set_cookie
+    assert "Secure" not in set_cookie
 
 #Login fail due to incorrect credentials
 def test_login_fail(client):

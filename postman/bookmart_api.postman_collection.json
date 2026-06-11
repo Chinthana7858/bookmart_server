@@ -1,0 +1,991 @@
+{
+  "info": {
+    "_postman_id": "7c1aa28c-efdf-4a1d-b56d-bookmartapi001",
+    "name": "BookMart API",
+    "description": "Postman collection for the BookMart FastAPI backend. Uses cookie-based JWT auth; after Login, Postman stores the jwt cookie automatically for the baseUrl domain. Includes admin dashboard, profile/address book, inventory, order filtering, and payment endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "adminId",
+      "value": "1"
+    },
+    {
+      "key": "productId",
+      "value": "1"
+    },
+    {
+      "key": "categoryId",
+      "value": "1"
+    },
+    {
+      "key": "cartItemId",
+      "value": "1"
+    },
+    {
+      "key": "orderId",
+      "value": "1"
+    },
+    {
+      "key": "sessionId",
+      "value": "guest-session-id"
+    },
+    {
+      "key": "searchTerm",
+      "value": "book"
+    },
+    {
+      "key": "addressId",
+      "value": "1"
+    },
+    {
+      "key": "orderStatus",
+      "value": "pending"
+    },
+    {
+      "key": "paymentStatus",
+      "value": "unpaid"
+    },
+    {
+      "key": "sortBy",
+      "value": "order_date"
+    },
+    {
+      "key": "sortOrder",
+      "value": "desc"
+    },
+    {
+      "key": "stripeSessionId",
+      "value": "cs_test_replace_me"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman User\",\n  \"email\": \"postman.user@bookmart.local\",\n  \"password\": \"User123\",\n  \"address\": \"123 API Street\",\n  \"role\": \"user\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          }
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@bookmart.local\",\n  \"password\": \"User123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin2@bookmart.local\",\n  \"password\": \"Admin123\"\n}"
+            },
+            "url": "{{baseUrl}}/auth/login"
+          }
+        },
+        {
+          "name": "Authenticate Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/auth/authenticate"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/auth/logout"
+          }
+        },
+        {
+          "name": "Signup With Profile And Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman User\",\n  \"email\": \"postman.profile@bookmart.local\",\n  \"password\": \"User123\",\n  \"phone_country_code\": \"+94\",\n  \"phone_number\": \"701234567\",\n  \"birthday\": \"1995-06-08\",\n  \"gender\": \"prefer_not_to_say\",\n  \"role\": \"user\",\n  \"primary_address\": {\n    \"label\": \"Home\",\n    \"recipient_name\": \"Postman User\",\n    \"phone_country_code\": \"+94\",\n    \"phone_number\": \"701234567\",\n    \"line1\": \"123 API Street\",\n    \"line2\": \"Unit 4\",\n    \"city\": \"Colombo\",\n    \"state\": \"Western\",\n    \"postal_code\": \"00100\",\n    \"country\": \"Sri Lanka\",\n    \"is_default\": true\n  }\n}"
+            },
+            "url": "{{baseUrl}}/auth/signup"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Admin Create User Or Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Admin\",\n  \"email\": \"admin1@gmail.com\",\n  \"password\": \"admin123\",\n  \"address\": \"123 API Street\",\n  \"phone_country_code\": \"+94\",\n  \"phone_number\": \"700000000\",\n  \"birthday\": \"1990-01-01\",\n  \"gender\": \"prefer_not_to_say\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/users/"
+          }
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/"
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"address\": \"Updated Address\"\n}"
+            },
+            "url": "{{baseUrl}}/users/{{userId}}"
+          }
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"User123\",\n  \"new_password\": \"User123\"\n}"
+            },
+            "url": "{{baseUrl}}/users/{{userId}}/password"
+          }
+        },
+        {
+          "name": "Dev Public Create Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dev Admin\",\n  \"email\": \"dev.admin@bookmart.local\",\n  \"password\": \"Admin123\",\n  \"address\": \"Dev Admin Address\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": "{{baseUrl}}/admin/users/public-admin"
+          }
+        },
+        {
+          "name": "List Users Paginated - Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/paginated?skip=0&limit=15&role=user"
+          }
+        },
+        {
+          "name": "List Users Paginated - Admins",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/paginated?skip=0&limit=15&role=admin"
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/profile"
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Profile Name\",\n  \"address\": \"Legacy Address Text\",\n  \"phone_country_code\": \"+94\",\n  \"phone_number\": \"709999999\",\n  \"birthday\": \"1995-06-08\",\n  \"gender\": \"prefer_not_to_say\"\n}"
+            },
+            "url": "{{baseUrl}}/users/me/profile"
+          }
+        },
+        {
+          "name": "List My Addresses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/addresses"
+          }
+        },
+        {
+          "name": "Create My Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Office\",\n  \"recipient_name\": \"Postman User\",\n  \"phone_country_code\": \"+94\",\n  \"phone_number\": \"701234567\",\n  \"line1\": \"456 API Avenue\",\n  \"line2\": \"Floor 2\",\n  \"city\": \"Colombo\",\n  \"state\": \"Western\",\n  \"postal_code\": \"00100\",\n  \"country\": \"Sri Lanka\",\n  \"is_default\": false\n}"
+            },
+            "url": "{{baseUrl}}/users/me/addresses"
+          }
+        },
+        {
+          "name": "Update My Address",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Office\",\n  \"recipient_name\": \"Updated Recipient\",\n  \"phone_country_code\": \"+94\",\n  \"phone_number\": \"701111111\",\n  \"line1\": \"Updated API Avenue\",\n  \"city\": \"Colombo\",\n  \"country\": \"Sri Lanka\",\n  \"is_default\": true\n}"
+            },
+            "url": "{{baseUrl}}/users/me/addresses/{{addressId}}"
+          }
+        },
+        {
+          "name": "Delete My Address",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/users/me/addresses/{{addressId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/categories/"
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Fiction\",\n  \"description\": \"Fiction books\"\n}"
+            },
+            "url": "{{baseUrl}}/categories/"
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/categories/{{categoryId}}"
+          }
+        },
+        {
+          "name": "Paginated Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/categories/paginated?skip=0&limit=15"
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Category\",\n  \"description\": \"Updated category description\"\n}"
+            },
+            "url": "{{baseUrl}}/categories/{{categoryId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product With Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Postman Book",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Created from Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "publisher",
+                  "value": "BookMart Press",
+                  "type": "text"
+                },
+                {
+                  "key": "author",
+                  "value": "API Author",
+                  "type": "text"
+                },
+                {
+                  "key": "language",
+                  "value": "English",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "29.99",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "25",
+                  "type": "text"
+                },
+                {
+                  "key": "category_id",
+                  "value": "{{categoryId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "category_ids",
+                  "value": "[{{categoryId}}]",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/"
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products/getproductbyid/{{productId}}"
+          }
+        },
+        {
+          "name": "Get Products By Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products/getbycategoryid/{{categoryId}}"
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products/search?name={{searchTerm}}"
+          }
+        },
+        {
+          "name": "Paginated Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products/paginated?limit=12&offset=0"
+          }
+        },
+        {
+          "name": "Sorted Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/products/sorted?sort_by=price&order=asc"
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/products/{{productId}}"
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Updated Postman Book",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Updated from Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "publisher",
+                  "value": "Updated Publisher",
+                  "type": "text"
+                },
+                {
+                  "key": "author",
+                  "value": "Updated Author",
+                  "type": "text"
+                },
+                {
+                  "key": "language",
+                  "value": "English",
+                  "type": "text"
+                },
+                {
+                  "key": "price",
+                  "value": "39.99",
+                  "type": "text"
+                },
+                {
+                  "key": "stock",
+                  "value": "30",
+                  "type": "text"
+                },
+                {
+                  "key": "category_id",
+                  "value": "{{categoryId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "category_ids",
+                  "value": "[{{categoryId}}]",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": "{{baseUrl}}/products/{{productId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cart",
+      "item": [
+        {
+          "name": "Add To Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": {{productId}},\n  \"quantity\": 1\n}"
+            },
+            "url": "{{baseUrl}}/cart/"
+          }
+        },
+        {
+          "name": "Get My Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cart/me"
+          }
+        },
+        {
+          "name": "Get Cart By User ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/cart/cartbyuserid/{{userId}}"
+          }
+        },
+        {
+          "name": "Update Cart Item Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2\n}"
+            },
+            "url": "{{baseUrl}}/cart/{{cartItemId}}"
+          }
+        },
+        {
+          "name": "Remove Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/cart/{{cartItemId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Empty Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/orders/"
+          }
+        },
+        {
+          "name": "Add Order Item",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": {{orderId}},\n  \"product_id\": {{productId}},\n  \"quantity\": 1\n}"
+            },
+            "url": "{{baseUrl}}/orders/items/"
+          }
+        },
+        {
+          "name": "Checkout Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": "{{baseUrl}}/orders/checkout"
+          }
+        },
+        {
+          "name": "Get My Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/me"
+          }
+        },
+        {
+          "name": "Get Order By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/{{orderId}}"
+          }
+        },
+        {
+          "name": "Get Orders By User ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/user/{{userId}}"
+          }
+        },
+        {
+          "name": "Admin List Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/"
+          }
+        },
+        {
+          "name": "Admin Paginated Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/paginated?skip=0&limit=15"
+          }
+        },
+        {
+          "name": "Admin Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\",\n  \"payment_status\": \"paid\"\n}"
+            },
+            "url": "{{baseUrl}}/orders/{{orderId}}/status"
+          }
+        },
+        {
+          "name": "Admin Paginated Orders - Search/Filter/Sort",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/orders/paginated?skip=0&limit=15&search={{searchTerm}}&status={{orderStatus}}&payment_status={{paymentStatus}}&sort_by={{sortBy}}&sort_order={{sortOrder}}"
+          }
+        },
+        {
+          "name": "Admin Update Order And Payment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\",\n  \"payment_status\": \"paid\"\n}"
+            },
+            "url": "{{baseUrl}}/orders/{{orderId}}/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Create Payment Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": {{orderId}}\n}"
+            },
+            "url": "{{baseUrl}}/payments/checkout-session"
+          }
+        },
+        {
+          "name": "Confirm Mock Payment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/payments/orders/{{orderId}}/confirm"
+          }
+        },
+        {
+          "name": "Create Stripe Payment Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"order_id\": {{orderId}}\n}"
+            },
+            "url": "{{baseUrl}}/payments/checkout-session"
+          }
+        },
+        {
+          "name": "Confirm Stripe Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"{{stripeSessionId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/payments/orders/{{orderId}}/confirm"
+          }
+        },
+        {
+          "name": "Stripe Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Stripe-Signature",
+                "value": "replace-with-stripe-cli-signature"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"metadata\": { \"order_id\": \"{{orderId}}\" },\n      \"payment_status\": \"paid\"\n    }\n  }\n}"
+            },
+            "url": "{{baseUrl}}/payments/stripe/webhook"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "Create Activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": {{productId}},\n  \"action\": \"view\"\n}"
+            },
+            "url": "{{baseUrl}}/activities/"
+          }
+        },
+        {
+          "name": "Top Viewed Product Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/activities/top-viewed-details"
+          }
+        },
+        {
+          "name": "List Activities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/activities/"
+          }
+        },
+        {
+          "name": "Activities By User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/activities/user/{{userId}}"
+          }
+        },
+        {
+          "name": "Activities By Session",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/activities/session/{{sessionId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "item": [
+        {
+          "name": "Generate Recommendations",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/generate"
+          }
+        },
+        {
+          "name": "List Recommendations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/recommendations"
+          }
+        },
+        {
+          "name": "Recommendations For Product",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/recommendations/{{productId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Co-Engagement",
+      "item": [
+        {
+          "name": "List Co-Engagement Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/co-engagement"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/admin/dashboard/summary"
+          }
+        }
+      ]
+    }
+  ]
+}
