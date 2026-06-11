@@ -1,6 +1,7 @@
 # BookMart Backend
 
 FastAPI backend for BookMart, an e-commerce bookstore with customer accounts, admin catalogue management, carts, orders, Stripe payments, activity tracking, and recommendations.
+<img width="1553" height="1438" alt="database" src="https://github.com/user-attachments/assets/21295870-f9d9-48dd-ab58-ecca80941a5c" />
 
 ## Web Tracking And Recommendations
 
