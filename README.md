@@ -2,6 +2,28 @@
 
 FastAPI backend for BookMart, an e-commerce bookstore with customer accounts, admin catalogue management, carts, orders, Stripe payments, activity tracking, and recommendations.
 
+## Web Tracking And Recommendations
+
+The backend stores product activity events for authenticated users and guest sessions. These events support popular-book displays, recommendation generation, and co-engagement statistics.
+
+Tracked actions:
+
+- `view`
+- `add_to_cart`
+- `buy`
+
+Important endpoints:
+
+- `POST /activities/` - store a product activity event.
+- `GET /activities/top-viewed-details` - return popular products for the frontend.
+- `GET /activities/user/{user_id}` - inspect activity by user.
+- `GET /activities/session/{session_id}` - inspect activity by guest session.
+- `POST /generate` - regenerate recommendations.
+- `GET /recommendations` - list generated recommendations.
+- `GET /recommendations/{base_product_id}` - get recommendations for a product.
+
+Activity records are stored with `session_id`, `product_id`, `action`, and `timestamp`. Co-engagement statistics are stored separately and used by the recommendation flow.
+
 ## Features
 
 - Cookie-based JWT authentication.
