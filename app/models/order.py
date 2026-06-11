@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, String, Numeric
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db import Base
@@ -8,6 +8,9 @@ class Order(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False,)
     order_date = Column(DateTime, default=datetime.utcnow)
+    status = Column(String(30), default="pending", nullable=False)
+    payment_status = Column(String(30), default="unpaid", nullable=False)
+    total_amount = Column(Numeric(10, 2), default=0, nullable=False)
 
     items = relationship("OrderItem", back_populates="order")
     user = relationship("User", back_populates="orders")

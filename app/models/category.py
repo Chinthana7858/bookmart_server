@@ -9,4 +9,9 @@ class Category(Base):
     name = Column(String(100), nullable=False)
     description = Column(Text)
 
-    products = relationship("Product", back_populates="category", cascade="all, delete-orphan")
+    products = relationship(
+        "Product",
+        secondary="product_categories",
+        back_populates="categories",
+        passive_deletes=True,
+    )

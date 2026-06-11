@@ -1,5 +1,10 @@
 
 import pytest
+import os
+
+os.environ.setdefault("DATABASE_URL", "sqlite:///./test.db")
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret")
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -33,3 +38,10 @@ def client(db_session):
         yield db_session
     app.dependency_overrides[get_db] = override_get_db
     return TestClient(app)
+
+@pytest.fixture(autouse=True)
+def mock_cloudinary_upload(monkeypatch):
+    def fake_upload(*args, **kwargs):
+        return {"secure_url": "https://example.com/test-book.jpg"}
+
+    monkeypatch.setattr("app.services.product_service.upload", fake_upload)

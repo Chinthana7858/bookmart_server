@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, File, Query, UploadFile, 
 from sqlalchemy.orm import Session
 from app.auth.utils import require_admin
 from app.db import get_db
-from app.schemas.product import ProductCreate, ProductOut, ProductUpdate
+from app.schemas.product import PaginatedProducts, ProductCreate, ProductOut, ProductUpdate
 from app.services import product_service
 from app.models.product import Product
 from app.services.product_service import create_product, get_all_products_paginated
@@ -16,14 +16,31 @@ router = APIRouter()
 def upload_product(
     title: str = Form(...),
     description: str = Form(...),
+    publisher: str = Form(None),
+    author: str = Form(None),
+    language: str = Form(None),
     price: float = Form(...),
     stock: int = Form(...),  
-    category_id: int = Form(...),
+    category_id: int = Form(None),
+    category_ids: str = Form(None),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_admin=Depends(require_admin)
 ):
-    return create_product(title, description, price, category_id, stock, file, db)
+    parsed_category_ids = json.loads(category_ids) if category_ids else None
+    return create_product(
+        title,
+        description,
+        price,
+        category_id,
+        parsed_category_ids,
+        stock,
+        file,
+        db,
+        publisher=publisher,
+        author=author,
+        language=language,
+    )
 
 @router.delete("/{product_id}")
 def delete_product(product_id: int, db: Session = Depends(get_db), current_admin=Depends(require_admin)):
@@ -41,7 +58,7 @@ def get_products_by_category(category_id: int, db: Session = Depends(get_db)):
 def search_products(name: str = Query(...), db: Session = Depends(get_db),):
     return product_service.search_products_by_name(name, db)
 
-@router.get("/paginated")
+@router.get("/paginated", response_model=PaginatedProducts)
 def get_paginated_products(
     db: Session = Depends(get_db),
     limit: int = Query(10, ge=1),
@@ -60,21 +77,37 @@ def get_sorted_products(
 
 
 
-# @router.put("/{product_id}", response_model=ProductOut)
-# def update_product(
-#     product_id: int,
-#     title: str = Form(None),
-#     description: str = Form(None),
-#     price: float = Form(None),
-#     stock: int = Form(None),
-#     category_id: int = Form(None),
-#     file: UploadFile = File(None),
-#     db: Session = Depends(get_db),
-#     current_admin=Depends(require_admin)
-# ):
-#     return product_service.update_product(
-#         product_id, title, description, price, stock, category_id, file, db
-#     )
+@router.put("/{product_id}", response_model=ProductOut)
+def update_product(
+    product_id: int,
+    title: str = Form(None),
+    description: str = Form(None),
+    publisher: str = Form(None),
+    author: str = Form(None),
+    language: str = Form(None),
+    price: float = Form(None),
+    stock: int = Form(None),
+    category_id: int = Form(None),
+    category_ids: str = Form(None),
+    file: UploadFile = File(None),
+    db: Session = Depends(get_db),
+    current_admin=Depends(require_admin),
+):
+    parsed_category_ids = json.loads(category_ids) if category_ids else None
+    return product_service.update_product(
+        product_id,
+        title,
+        description,
+        price,
+        stock,
+        category_id,
+        parsed_category_ids,
+        file,
+        db,
+        publisher=publisher,
+        author=author,
+        language=language,
+    )
 
 # @router.get("/", response_model=list[ProductOut])
 # def get_all_products(db: Session = Depends(get_db)):
